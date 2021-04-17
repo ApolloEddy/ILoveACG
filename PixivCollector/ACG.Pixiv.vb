@@ -30,11 +30,12 @@ Public Class Pixiv
 			Dim p As String = $"{path}[{iInfo.Id}]{iInfo.Name}_p{i}.jpg"
 			For Each c As Char In IO.Path.GetInvalidPathChars()
 				If p.Contains(c) Then p.Replace(iInfo.Name, "") : Exit For
-				Next
-				IO.File.WriteAllBytes(p, bytes)
-				i += 1
 			Next
-			Return i - 1
+			p = $"{path}[{iInfo.Id}]_p{i}.jpg"
+			IO.File.WriteAllBytes(p, bytes)
+			i += 1
+		Next
+		Return i - 1
 	End Function
 	Protected Function ExtractAllImageLinks(json As String) As String()
 		Dim ret As New List(Of String)
