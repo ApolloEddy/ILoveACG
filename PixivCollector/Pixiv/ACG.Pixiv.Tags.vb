@@ -66,6 +66,9 @@
 			Next
 			Console.WriteLine($"该作品有[{piccount}]张插图！")
 		Next
+
+		Console.WriteLine()
+		Console.WriteLine($"下载完毕！共下载[{Downloaded}]张图片，有[{FailToDownloaded}]张图片下载失败！")
 	End Sub
 
 	''' <summary>
