@@ -64,7 +64,7 @@
 					Threading.Thread.Sleep(Rand.Next(10, 30)) ' 随机数暂停，防止被反爬机制封杀
 				End Try
 			Next
-			Console.WriteLine($"该作品有[{piccount}]张插图！")
+			Console.WriteLine($"该作品有[{piccount}]张插图！ 进度: {imageInfoList.IndexOf(img) + 1}/{imageInfoList.Count}=>{((imageInfoList.IndexOf(img) + 1) / imageInfoList.Count)}%")
 		Next
 
 		Console.WriteLine()
