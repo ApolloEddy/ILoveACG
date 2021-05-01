@@ -102,6 +102,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Pixiv\ACG.Pixiv.Rank.vb" />
     <Compile Include="Pixiv\ImageInfoListDatabase.vb" />
     <Compile Include="Pixiv\Template.Designer.vb">
       <AutoGen>True</AutoGen>

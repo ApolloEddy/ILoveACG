@@ -1,4 +1,7 @@
-﻿Public Class PixivTags : Inherits Pixiv
+﻿''' <summary>
+''' 
+''' </summary>
+Public Class PixivTags : Inherits Pixiv
 	Public Sub New(tagName As String)
 		Me.TagName = tagName
 	End Sub
@@ -8,67 +11,44 @@
 		End Get
 	End Property
 	Private _totalImages As Long
-	Public ReadOnly Property Downloaded As List(Of ImageInfo)
-		Get
-			Return _downloaded
-		End Get
-	End Property
-	Property _downloaded As New List(Of ImageInfo)
-	Public ReadOnly Property FailToDownloaded As List(Of ImageInfo)
-		Get
-			Return _failToDownloaded
-		End Get
-	End Property
-	Private _failToDownloaded As New List(Of ImageInfo)
 	Public ReadOnly Property TagName As String
-	Private ReadOnly Rand As New Random(CLng($"{Minute(Now)}{Second(Now)}{Date.Now.Millisecond}"))
 
 	Public Sub DownloadTagsImages(path As String)
 		Dim json As String
-		Dim imageInfoList As New List(Of Pixiv.ImageInfo)
-		Dim Catched As Long = 0
-		' 第一步、递归获取所有的图片信息
+		Dim imageInfoList As New List(Of ImageInfo)
+		Dim Catched As Long
+		' 第一步、迭代获取所有的图片信息
 		Console.Write("正在获取图片信息...")
 		Dim page As Integer = 1
-		While Catched <= TotalImages
-			json = GetJson(TagUrl(TagName, page.ToString()))
-			imageInfoList.AddRange(GetTagImageInfoList(json))
-			Catched += imageInfoList.Count
-			page += 1
-			Threading.Thread.Sleep(Rand.Next(10, 30)) ' 随机数暂停，防止被反爬机制封杀
-		End While
+		Do
+			Try
+				json = GetJson(TagUrl(TagName, page.ToString()))
+				imageInfoList.AddRange(GetTagImageInfoList(json))
+				page += 1
+				'Threading.Thread.Sleep(Rand.Next(10, 30)) ' 随机数暂停，防止被反爬机制封杀
+				If page Mod 100 = 0 Then MsgBox($"imgs:{imageInfoList.Count}, total:{TotalImages}, page:{page}")
+			Catch ex As Exception
+				Exit Do
+			End Try
+		Loop
+		imageInfoList = imageInfoList.Distinct().ToList() ' 列表去重
 		Console.WriteLine("完成！")
 		Console.WriteLine($"共计获取[{page}]页内容，[{imageInfoList.Count}]个文件信息，total值：{TotalImages}{vbNewLine}")
 
 		' 第二步、下载获取的图片
+		Catched = 0
 		path += TagName + "\"
 		Dim piccount As Integer
 		IO.Directory.CreateDirectory(path)
 		Console.WriteLine($"开始下载文件到目录：""{path}""")
 		For Each img As ImageInfo In imageInfoList
-			piccount = 0
-			Console.Write($"正在下载图片[{img.Name} (id:{img.Id})]...")
-			For i As Integer = 1 To 6
-				Try
-					piccount = DownloadImage(img, path)
-					Console.Write("完成！")
-					Exit For
-				Catch ex As Exception
-					If Not i = 6 Then
-						If i = 1 Then Console.WriteLine()
-						PutsError($"下载失败，即将进行第 [{i + 1}] 次重试...")
-					Else
-						PutsError($"id为[{img.Id}]的图片下载失败，错误信息：{ex.Message}")
-						_failToDownloaded.Add(img)
-					End If
-					Threading.Thread.Sleep(Rand.Next(10, 30)) ' 随机数暂停，防止被反爬机制封杀
-				End Try
-			Next
-			Console.WriteLine($"该作品有[{piccount}]张插图！ 进度: {imageInfoList.IndexOf(img) + 1}/{imageInfoList.Count}=>{((imageInfoList.IndexOf(img) + 1) / imageInfoList.Count)}%")
+			piccount = DownloadImage(img, path)
+			Catched += piccount
+			Console.WriteLine($"该作品有[{piccount}]张插图！ 进度: {imageInfoList.IndexOf(img) + 1}/{imageInfoList.Count}=>{Format(100 * (imageInfoList.IndexOf(img) + 1) / imageInfoList.Count, "0.00")}%")
 		Next
 
 		Console.WriteLine()
-		Console.WriteLine($"下载完毕！共下载[{Downloaded}]张图片，有[{FailToDownloaded}]张图片下载失败！")
+		Console.WriteLine($"下载完毕！共下载[{Catched}]张图片，有[{FailToDownloaded.Count}]张图片下载失败！")
 	End Sub
 
 	''' <summary>

@@ -75,11 +75,10 @@ Public Class WebProtocol
 			If AutoUA Then UserAgent = If(ComputerUA, randUA.NextComputerUA, randUA.NextHandphoneUA)
 			Try
 				response = request.GetResponse()
-				Threading.Thread.Sleep(RequestInterval)
-			Catch ex As Exception
-				If Not i = 6 Then Continue For
-				Throw ex
 				Exit For
+			Catch ex As Exception
+				Threading.Thread.Sleep(RequestInterval)
+				If Not i = 6 Then Continue For Else Throw ex
 			End Try
 		Next
 		Return response.GetResponseStream()
