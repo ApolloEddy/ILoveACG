@@ -8,7 +8,8 @@
 		stopwatch.Start()
 		If arg.Length = 0 Then
 			Dim p As New PixivRank()
-
+			p.DownloadDailyRankImages("F:\PixivImages\")
+			Exit Sub
 		End If
 
 		' 以下为测试单元

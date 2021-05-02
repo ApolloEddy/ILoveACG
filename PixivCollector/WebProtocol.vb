@@ -26,6 +26,14 @@ Public Class WebProtocol
 			request.UserAgent = value
 		End Set
 	End Property
+	Public Property Cookies As CookieContainer
+		Get
+			Return request.CookieContainer
+		End Get
+		Set(value As CookieContainer)
+			request.CookieContainer = value
+		End Set
+	End Property
 	Public Property Referer As String
 		Get
 			Return request.Referer

@@ -32,11 +32,11 @@ Public Class PixivTags : Inherits Pixiv
 			Console.Title = $"{My.Application.Info.Title}  [页面采集进度：{process}]"
 			json = GetJson(TagUrl(TagName, page.ToString()))
 			imageInfoList.AddRange(GetTagImageInfoList(json))
+			imageInfoList = imageInfoList.Distinct().ToList() ' 列表去重
 			page += 1
 			'Threading.Thread.Sleep(Rand.Next(10, 30)) ' 随机数暂停，防止被反爬机制封杀
 			'If page Mod 100 = 0 Then MsgBox($"imgs:{imageInfoList.Count}, total:{TotalImages}, page:{page}")
 		Loop Until page >= CInt(TotalImages / 60) + 1
-		imageInfoList = imageInfoList.Distinct().ToList() ' 列表去重
 		Console.Title = $"{My.Application.Info.Title}  [页面采集进度：100.000%]"
 		Console.WriteLine(", 完成！")
 		Console.WriteLine($"共计获取[{page}]页内容，[{imageInfoList.Count}]个文件信息，total值：{TotalImages}{vbNewLine}")
