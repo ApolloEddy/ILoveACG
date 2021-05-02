@@ -78,7 +78,12 @@ Public Class WebProtocol
 				Exit For
 			Catch ex As Exception
 				Threading.Thread.Sleep(RequestInterval)
-				If Not i = 6 Then Continue For Else PutsError(ex.Message)
+				If Not i = 6 Then
+					Continue For
+				Else
+					PutsError(ex.Message)
+					Exit For
+				End If
 			End Try
 		Next
 		Return response.GetResponseStream()

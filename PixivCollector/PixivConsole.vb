@@ -1,8 +1,9 @@
 ﻿Module PixivConsole
 
 	Sub Main(arg As String())
+		Console.Title = My.Application.Info.Title
 		Dim stopwatch As New Stopwatch()
-		Stopwatch.StartNew()
+		stopwatch.Start()
 		If arg.Length = 0 Then
 			Dim p As New PixivRank()
 
@@ -10,6 +11,7 @@
 		Test(arg(0))
 
 		Console.WriteLine($"finish!  用时：{Format(stopwatch.ElapsedMilliseconds / 1000, "0.000")}s")
+		Console.Title = My.Application.Info.Title + “完成”
 		stopwatch.Stop()
 		Console.ReadKey()
 	End Sub

@@ -20,19 +20,25 @@ Public Class PixivTags : Inherits Pixiv
 		' 第一步、迭代获取所有的图片信息
 		Console.Write("正在获取图片信息...")
 		Dim page As Integer = 1
+		Dim left As Integer = Console.CursorLeft
+		Dim top As Integer = Console.CursorTop
+		'_totalImages = 121 ' 为了防止误判，在第一次迭代就终止
 		Do
-			Try
-				json = GetJson(TagUrl(TagName, page.ToString()))
-				imageInfoList.AddRange(GetTagImageInfoList(json))
-				page += 1
-				'Threading.Thread.Sleep(Rand.Next(10, 30)) ' 随机数暂停，防止被反爬机制封杀
-				'If page Mod 100 = 0 Then MsgBox($"imgs:{imageInfoList.Count}, total:{TotalImages}, page:{page}")
-			Catch ex As Exception
-				Exit Do
-			End Try
-		Loop
+			Dim process As String = Format(page * 100 / (CInt(TotalImages / 60) + 1), "00.000") + "%"
+			Console.SetCursorPosition(left, top)
+			Console.Write(
+				$"当前进度：{page}/{If(Not CInt(TotalImages / 60) + 1 = 1, CInt(TotalImages / 60) + 1, "∞")} " +
+				$"合[{If(process = "100.000%", "0%", process)}]")
+			Console.Title = $"{My.Application.Info.Title}  [页面采集进度：{process}]"
+			json = GetJson(TagUrl(TagName, page.ToString()))
+			imageInfoList.AddRange(GetTagImageInfoList(json))
+			page += 1
+			'Threading.Thread.Sleep(Rand.Next(10, 30)) ' 随机数暂停，防止被反爬机制封杀
+			'If page Mod 100 = 0 Then MsgBox($"imgs:{imageInfoList.Count}, total:{TotalImages}, page:{page}")
+		Loop Until page >= CInt(TotalImages / 60) + 1
 		imageInfoList = imageInfoList.Distinct().ToList() ' 列表去重
-		Console.WriteLine("完成！")
+		Console.Title = $"{My.Application.Info.Title}  [页面采集进度：100.000%]"
+		Console.WriteLine(", 完成！")
 		Console.WriteLine($"共计获取[{page}]页内容，[{imageInfoList.Count}]个文件信息，total值：{TotalImages}{vbNewLine}")
 
 		' 第二步、下载获取的图片
@@ -42,9 +48,11 @@ Public Class PixivTags : Inherits Pixiv
 		IO.Directory.CreateDirectory(path)
 		Console.WriteLine($"开始下载文件到目录：""{path}""")
 		For Each img As ImageInfo In imageInfoList
+			Dim process As String = $"{Format(100 * (imageInfoList.IndexOf(img) + 1) / imageInfoList.Count, "0.00")}%"
+			Console.Title = $"{My.Application.Info.Title}  [图片下载进度：{process}]"
 			piccount = DownloadImage(img, path)
 			Catched += piccount
-			Console.WriteLine($"该作品有[{piccount}]张插图！ 进度: {imageInfoList.IndexOf(img) + 1}/{imageInfoList.Count}=>{Format(100 * (imageInfoList.IndexOf(img) + 1) / imageInfoList.Count, "0.00")}%")
+			Console.WriteLine($"该作品有[{piccount}]张插图！ 进度: {imageInfoList.IndexOf(img) + 1}/{imageInfoList.Count}=>{process}")
 		Next
 
 		Console.WriteLine()
