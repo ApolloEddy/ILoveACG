@@ -78,7 +78,7 @@ Public Class WebProtocol
 				Exit For
 			Catch ex As Exception
 				Threading.Thread.Sleep(RequestInterval)
-				If Not i = 6 Then Continue For Else Throw ex
+				If Not i = 6 Then Continue For Else PutsError(ex.Message)
 			End Try
 		Next
 		Return response.GetResponseStream()
@@ -103,4 +103,10 @@ Public Class WebProtocol
 	Public Overloads Shared Function UnescapeDataString(value As String) As String
 		Return Uri.UnescapeDataString(value)
 	End Function
+	Protected Shared Sub PutsError(message As String)
+		Console.ResetColor()
+		Console.ForegroundColor = ConsoleColor.Red
+		Console.WriteLine($"[Error] {message}")
+		Console.ResetColor()
+	End Sub
 End Class

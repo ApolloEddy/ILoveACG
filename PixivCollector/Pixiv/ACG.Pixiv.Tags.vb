@@ -26,7 +26,7 @@ Public Class PixivTags : Inherits Pixiv
 				imageInfoList.AddRange(GetTagImageInfoList(json))
 				page += 1
 				'Threading.Thread.Sleep(Rand.Next(10, 30)) ' 随机数暂停，防止被反爬机制封杀
-				If page Mod 100 = 0 Then MsgBox($"imgs:{imageInfoList.Count}, total:{TotalImages}, page:{page}")
+				'If page Mod 100 = 0 Then MsgBox($"imgs:{imageInfoList.Count}, total:{TotalImages}, page:{page}")
 			Catch ex As Exception
 				Exit Do
 			End Try
